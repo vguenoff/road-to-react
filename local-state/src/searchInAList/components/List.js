@@ -1,4 +1,5 @@
 import React from 'react';
+import { arrayOf, any } from 'prop-types';
 
 const List = ({ list }) => (
   <ul>
@@ -8,5 +9,9 @@ const List = ({ list }) => (
     }
   </ul>
 );
+
+List.propTypes = {
+  list: arrayOf(any).isRequired
+};
 
 export default List;

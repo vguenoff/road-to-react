@@ -1,27 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { string, func } from 'prop-types';
 
-class Search extends Component {
-  state = {
-    query: ''
-  }
+const Search = ({ children, query, onChange }) => (
+  <div>
+    {children}
+    <input
+      type="text"
+      value={query}
+      onChange={onChange}
+    />
+  </div>
+);
 
-  onChange = (e) => {
-    const { value } = e.target;
-    this.setState({ query: value });
-  }
+Search.propTypes = {
+  children: string.isRequired,
+  query: string,
+  onChange: func.isRequired,
+};
 
-  render() {
-    return (
-      <div>
-        {this.props.children}
-        <input
-          type="text"
-          value={this.state.query}
-          onChange={this.onChange}
-        />
-      </div>
-    );
-  }
-}
+Search.defaultProps = {
+  query: '',
+};
 
 export default Search;
