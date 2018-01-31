@@ -6,7 +6,7 @@ import List from './List';
 
 class SearchableList extends Component {
   state = {
-    query: ''
+    query: '',
   }
 
   onChange = e => this.setState({ query: e.target.value });
@@ -18,6 +18,9 @@ class SearchableList extends Component {
     const { query } = this.state;
     const { list } = this.props;
 
+    const filteredList = list
+      .filter(this.filterByQuery(query));
+
     return (
       <div>
         <Search
@@ -26,18 +29,14 @@ class SearchableList extends Component {
         >
           Search List:
         </Search>
-        <List
-          list={
-            (list || []).filter(this.filterByQuery(query))
-          }
-        />
+        <List list={filteredList} />
       </div>
     );
   }
 }
 
 SearchableList.propTypes = {
-  list: arrayOf(any).isRequired
+  list: arrayOf(any).isRequired,
 };
 
 export default SearchableList;
