@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { arrayOf, any } from 'prop-types';
+import { arrayOf, shape, number, string } from 'prop-types';
 
 import Search from './Search';
-import List from './List';
+import ArchivableList from './ArchivableList';
 
 class SearchableList extends Component {
   state = {
@@ -29,14 +29,17 @@ class SearchableList extends Component {
         >
           Search List:
         </Search>
-        <List list={filteredList} />
+        <ArchivableList list={filteredList} />
       </div>
     );
   }
 }
 
 SearchableList.propTypes = {
-  list: arrayOf(any).isRequired,
+  list: arrayOf(shape({
+    id: number,
+    name: string,
+  })).isRequired,
 };
 
 export default SearchableList;
