@@ -11,6 +11,11 @@ const actions = {
   filterSet: 'FILTER_SET',
 };
 
+const todos = [
+  { id: 0, name: 'learn redux' },
+  { id: 1, name: 'learn mobx' },
+];
+
 // todo reducer
 const applyAddTodo = (state, action) =>
   [...state, { ...action.payload, completed: false }];
@@ -19,10 +24,9 @@ const applyToggleTodo = (state, action) =>
   state.map(todo =>
     (todo.id === action.payload.id
       ? { ...todo, completed: !todo.completed }
-      : todo),
-  );
+      : todo));
 
-const todoReducer = (state = [], action) => {
+const todoReducer = (state = todos, action) => {
   switch (action.type) {
     case actions.addTodo:
       return applyAddTodo(state, action);
@@ -43,22 +47,6 @@ const filterReducer = (state = 'SHOW_ALL', action) => {
   }
 };
 
-// root reducer
-const rootReducer = combineReducers({
-  todoReducer,
-  filterReducer,
-});
-
-// creating a store
-const store = createStore(rootReducer);
-console.log('-----------------initial state-----------------');
-console.log(store.getState());
-
-const unsubscribe = store.subscribe(() => {
-  console.log('store update / current state:');
-  console.log(store.getState());
-});
-
 // action creators
 const doAddTodo = (id, name) => ({
   type: actions.addTodo,
@@ -75,15 +63,63 @@ const doSetFilter = filter => ({
   payload: filter,
 });
 
-// dispatching actions (action creators)
-store.dispatch(doAddTodo(0, 'learn react'));
-store.dispatch(doAddTodo(1, 'learn mobx'));
-store.dispatch(doToggleTodo(0));
-store.dispatch(doSetFilter('COMPLETED'));
+// root reducer
+const rootReducer = combineReducers({
+  todoReducer,
+  filterReducer,
+});
 
-unsubscribe();
+// creating a store
+const store = createStore(rootReducer);
+console.log('-----------------initial state-----------------');
+console.log(store.getState());
 
 // view layer
-const TodoApp = () => <div>Todo App</div>;
+const TodoItem = ({ todo, onToggleTodo }) => {
+  const { name, id, completed } = todo;
 
-ReactDOM.render(<TodoApp />, document.getElementById('root'));
+  return (
+    <div>
+      {name}
+      <button
+        type="button"
+        onClick={() => onToggleTodo(id)}
+      >
+        {completed ? 'Incomplete' : 'Complete'}
+      </button>
+    </div>
+  );
+};
+
+const TodoList = ({ todos, onToggleTodo }) => (
+  <div>
+    {
+      todos.map(todo =>
+        (<TodoItem
+          key={todo.id}
+          todo={todo}
+          onToggleTodo={onToggleTodo}
+        />))
+    }
+  </div>
+);
+
+const TodoApp = ({ todos, onToggleTodo }) => (
+  <TodoList
+    todos={todos}
+    onToggleTodo={onToggleTodo}
+  />
+);
+
+function render() {
+  ReactDOM.render(
+    <TodoApp
+      todos={store.getState().todoReducer}
+      onToggleTodo={id => store.dispatch(doToggleTodo(id))}
+    />, document.getElementById('root'),
+  );
+}
+
+store.subscribe(render);
+render();
+
